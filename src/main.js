@@ -6,6 +6,7 @@
 //       3) create new title screen (3 pts)
 //       4) display time remaining (3 pts)
 //       5) implement mouse control for player movement (5 pts)
+// citations: spaceship from https://foozlecc.itch.io/void-main-ship
 
 let config = {
     type: Phaser.AUTO,
