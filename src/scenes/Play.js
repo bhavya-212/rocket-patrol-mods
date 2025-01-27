@@ -20,6 +20,7 @@ class Play extends Phaser.Scene{
         this.ship02 = new Spaceship(this, game.config.width + borderUISize*3, borderUISize*5 + borderPadding*2, 'spaceship', 0, 20).setOrigin(0,0);
         this.ship03 = new Spaceship(this, game.config.width, borderUISize*6 + borderPadding*4, 'spaceship', 0, 10).setOrigin(0,0);
         this.ship04 = new Spaceship(this, game.config.width + borderUISize*1, borderUISize*4, 'spaceship1', 0, 40).setOrigin(0,0);
+        this.ship04.moveSpeed = game.settings.spaceshipSpeed * 1.2;
         //define keys
         keyFIRE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F);
         keyRESET = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
@@ -50,6 +51,18 @@ class Play extends Phaser.Scene{
             this.add.text(game.config.width/2, game.config.height/2 + 64, 'Press (R) to Restart or ← for Menu', scoreConfig).setOrigin(0.5);
             this.gameOver = true;
         }, null, this)
+        //add particles
+        // this.particles = this.add.particles('particle');
+        // this.emitter = this.particles.createEmitter ({
+        //     x: 200,
+        //     y: 150,
+        //     speed: 200,
+        //     lifespan: 500,
+        //     blendMode: 'ADD',
+        //     maxParticles: 50,
+        //     scale: {start: 1, end: 0},
+        //     active: false,
+        // });
     }
 
     update(){
@@ -102,10 +115,22 @@ class Play extends Phaser.Scene{
         //create explosion sprite
         let boom = this.add.sprite(ship.x, ship.y, 'explosion').setOrigin(0,0);
         boom.anims.play('explode');
+        // let particleExplode = this.add.particles('particle');
+        // let emitter = particleExplode.createEmitter({
+        //     x: ship.x,
+        //     y: ship.y,
+        //     speed: 200,
+        //     lifespan: 500,
+        //     blendMode: 'ADD',
+        //     maxParticles: 50,
+        //     scale: {start: 1, end: 0},
+        // })
         boom.on('animationcomplete', () => {
             ship.reset();
             ship.alpha = 1;
             boom.destroy();
+           // emitter.stop();
+           // particleExplode.destroy();
         })
         //score add and text update
         this.p1Score += ship.points;
