@@ -8,6 +8,7 @@
 //       5) implement mouse control for player movement (5 pts)
 // citations: spaceship from https://foozlecc.itch.io/void-main-ship
 //            particle from https://free-game-assets.itch.io/free-enemy-spaceship-2d-sprites-pixel-art
+//            planet from https://twojyou.itch.io/space-sprites
 
 let config = {
     type: Phaser.AUTO,
