@@ -40,6 +40,7 @@ class Play extends Phaser.Scene{
               bottom: 5,
             },
         }
+        //display timer
         this.textConfig = this.add.text(borderUISize*16 + borderPadding, borderUISize + borderPadding*4, `Time: ${this.remainingTime / 1000}`, {
             fontFamily: 'Courier New',
             fontSize: '28px',
@@ -51,6 +52,8 @@ class Play extends Phaser.Scene{
         //game over flag
         this.gameOver = false;
         this.remainingTime = game.settings.gameTimer;
+        //background looping music
+        let loopingMusic = this.sound.play('looping-music', {loop: true});
         //play clock
         this.clock = this.time.addEvent({
             delay: 1000,
@@ -62,6 +65,7 @@ class Play extends Phaser.Scene{
                     this.add.text(game.config.width/2, game.config.height/2, 'Game Over', scoreConfig).setOrigin(0.5);
                     this.add.text(game.config.width/2, game.config.height/2 + 64, 'Press (R) to Restart or ← for Menu', scoreConfig).setOrigin(0.5);
                     this.gameOver = true;
+                    this.sound.stopByKey('looping-music');
                 }
             },
             callbackScope: this,
@@ -79,41 +83,42 @@ class Play extends Phaser.Scene{
         }
         this.starfield.tilePositionX -= 4;
         if (!this.gameOver){
-            let collision = this.p1Rocket.update();
+            this.p1Rocket.update();
             this.ship01.update();
             this.ship02.update();
             this.ship03.update();
             this.ship04.update();
-            if (collision){
-                this.remainingTime -= 2000; //decreases time
-                console.log(this.remainingTime);
-            }
         }
         //check collisions
         if (this.checkCollision(this.p1Rocket, this.ship04)){
             this.p1Rocket.reset();
             this.shipExplode(this.ship04);
-            this.remainingTime += 2000; //increases time
+            this.remainingTime += 4000; //increases time
             console.log(this.remainingTime);
         }
         if (this.checkCollision(this.p1Rocket, this.ship03)){
             this.p1Rocket.reset();
             this.shipExplode(this.ship03);
-            this.remainingTime += 2000; //increases time
+            this.remainingTime += 4000; //increases time
             console.log(this.remainingTime);
         }
         if (this.checkCollision(this.p1Rocket, this.ship02)){
             this.p1Rocket.reset();
             this.shipExplode(this.ship02);
-            this.remainingTime += 2000; //increases time
+            this.remainingTime += 4000; //increases time
             console.log(this.remainingTime);
         }
         if (this.checkCollision(this.p1Rocket, this.ship01)){
             this.p1Rocket.reset();
             this.shipExplode(this.ship01);
-            this.remainingTime += 2000; //increases time
+            this.remainingTime += 4000; //increases time
             console.log(this.remainingTime);
         }
+    }
+
+    rocketMissedHit(){
+        this.remainingTime -= 2000; //decreases time
+        console.log(this.remainingTime);
     }
 
     checkCollision(rocket, ship){
@@ -140,6 +145,14 @@ class Play extends Phaser.Scene{
         this.p1Score += ship.points;
         this.scoreLeft.text = this.p1Score;
         //sound effects
-        this.sound.play('sfx-explosion');
+        const explosionSFX = [
+            "sfx-explosion",
+            "boomsfx",
+            "boomsfx1",
+            "boomsfx2",
+            "boomsfx3"
+        ];
+        const randomizedExplosionSFX = Math.floor(Math.random() * explosionSFX.length);
+        this.sound.play(explosionSFX[randomizedExplosionSFX]);
     }
 }
