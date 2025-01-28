@@ -1,6 +1,6 @@
 // name: Bhavya Anil
 // title: Rocket Patrol: The Defenders
-// time: 8 hours
+// time: 10 hours
 // mods: 1) create new enemy spaceship type (5 pts) 
 //       2) particle explosion when rocket hits spaceship (5 pts)
 //       3) create new title screen (3 pts)
