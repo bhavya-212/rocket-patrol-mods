@@ -39,30 +39,34 @@ class Play extends Phaser.Scene{
               top: 5,
               bottom: 5,
             },
-            fixedWidth: 100
         }
+        this.textConfig = this.add.text(borderUISize*16 + borderPadding, borderUISize + borderPadding*4, `Time: ${this.remainingTime / 1000}`, {
+            fontFamily: 'Courier New',
+            fontSize: '28px',
+            backgroundColor: '#F3B141',
+            color: '#FFFFFF',
+            align: 'right',
+        }).setOrigin(0.5);
         this.scoreLeft = this.add.text(borderUISize + borderPadding, borderUISize + borderPadding*2, this.p1Score, scoreConfig); 
         //game over flag
         this.gameOver = false;
+        this.remainingTime = game.settings.gameTimer;
         //play clock
-        scoreConfig.fixedWidth = 0;
-        this.clock = this.time.delayedCall(game.settings.gameTimer, () => {
-            this.add.text(game.config.width/2, game.config.height/2, 'GAME OVER', scoreConfig).setOrigin(0.5);
-            this.add.text(game.config.width/2, game.config.height/2 + 64, 'Press (R) to Restart or ← for Menu', scoreConfig).setOrigin(0.5);
-            this.gameOver = true;
-        }, null, this)
-        //add particles
-        // this.particles = this.add.particles('particle');
-        // this.emitter = this.particles.createEmitter ({
-        //     x: 200,
-        //     y: 150,
-        //     speed: 200,
-        //     lifespan: 500,
-        //     blendMode: 'ADD',
-        //     maxParticles: 50,
-        //     scale: {start: 1, end: 0},
-        //     active: false,
-        // });
+        this.clock = this.time.addEvent({
+            delay: 1000,
+            callback: () => {
+                this.remainingTime -= 1000;
+                this.textConfig.setText(`Time: ${Math.max(this.remainingTime/1000, 0)}`);
+                if (this.remainingTime <= 0){
+                    this.clock.remove(false);
+                    this.add.text(game.config.width/2, game.config.height/2, 'Game Over', scoreConfig).setOrigin(0.5);
+                    this.add.text(game.config.width/2, game.config.height/2 + 64, 'Press (R) to Restart or ← for Menu', scoreConfig).setOrigin(0.5);
+                    this.gameOver = true;
+                }
+            },
+            callbackScope: this,
+            loop: true,
+        });
     }
 
     update(){
@@ -75,28 +79,40 @@ class Play extends Phaser.Scene{
         }
         this.starfield.tilePositionX -= 4;
         if (!this.gameOver){
-            this.p1Rocket.update();
+            let collision = this.p1Rocket.update();
             this.ship01.update();
             this.ship02.update();
             this.ship03.update();
             this.ship04.update();
+            if (collision){
+                this.remainingTime -= 2000; //decreases time
+                console.log(this.remainingTime);
+            }
         }
         //check collisions
         if (this.checkCollision(this.p1Rocket, this.ship04)){
             this.p1Rocket.reset();
             this.shipExplode(this.ship04);
+            this.remainingTime += 2000; //increases time
+            console.log(this.remainingTime);
         }
         if (this.checkCollision(this.p1Rocket, this.ship03)){
             this.p1Rocket.reset();
             this.shipExplode(this.ship03);
+            this.remainingTime += 2000; //increases time
+            console.log(this.remainingTime);
         }
         if (this.checkCollision(this.p1Rocket, this.ship02)){
             this.p1Rocket.reset();
             this.shipExplode(this.ship02);
+            this.remainingTime += 2000; //increases time
+            console.log(this.remainingTime);
         }
         if (this.checkCollision(this.p1Rocket, this.ship01)){
             this.p1Rocket.reset();
             this.shipExplode(this.ship01);
+            this.remainingTime += 2000; //increases time
+            console.log(this.remainingTime);
         }
     }
 
@@ -115,22 +131,10 @@ class Play extends Phaser.Scene{
         //create explosion sprite
         let boom = this.add.sprite(ship.x, ship.y, 'explosion').setOrigin(0,0);
         boom.anims.play('explode');
-        // let particleExplode = this.add.particles('particle');
-        // let emitter = particleExplode.createEmitter({
-        //     x: ship.x,
-        //     y: ship.y,
-        //     speed: 200,
-        //     lifespan: 500,
-        //     blendMode: 'ADD',
-        //     maxParticles: 50,
-        //     scale: {start: 1, end: 0},
-        // })
         boom.on('animationcomplete', () => {
             ship.reset();
             ship.alpha = 1;
             boom.destroy();
-           // emitter.stop();
-           // particleExplode.destroy();
         })
         //score add and text update
         this.p1Score += ship.points;
